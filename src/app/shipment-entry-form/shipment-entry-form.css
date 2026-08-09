@@ -1,0 +1,905 @@
+/* ================================================================
+   FILE: shipment-entry-form.component.css
+   DESCRIPTION: Complete styling for the Freight Forwarding ERP
+                Shipment Entry Form. Features a dark-navy & gold
+                theme with glass-morphism, smooth animations, and
+                responsive design.
+   ================================================================ */
+
+/* ---------- GLOBAL RESET / VARIABLES ---------- */
+:host {
+    display: block;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --navy: #0a1628;
+    --navy-light: #1a2a4a;
+    --navy-mid: #2a3f6a;
+    --gold: #c9a84c;
+    --gold-light: #e8d48b;
+    --gold-glow: rgba(201, 168, 76, 0.25);
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --shadow-sm: 0 1px 2px rgba(10, 22, 40, 0.05);
+    --shadow-md: 0 4px 24px rgba(10, 22, 40, 0.08);
+    --shadow-lg: 0 12px 48px rgba(10, 22, 40, 0.12);
+    --shadow-xl: 0 20px 60px rgba(10, 22, 40, 0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- CONTAINER ---------- */
+.form-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem 2rem;
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+/* subtle background glow */
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.form-container>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- HEADER ---------- */
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin: -2rem -1.5rem 0;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    flex-shrink: 0;
+}
+
+.brand-text h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.brand-text h1 span {
+    color: var(--gold);
+}
+
+.brand-text p {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.shipment-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    backdrop-filter: blur(4px);
+}
+
+.shipment-badge .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.shipment-badge .number {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--gold-light);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.status-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.35rem 1rem;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--gray-300);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-pill.status-draft {
+    background: rgba(201, 168, 76, 0.15);
+    color: var(--gold-light);
+    border-color: rgba(201, 168, 76, 0.2);
+}
+
+/* ---------- STEPPER ---------- */
+.stepper {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem 2rem 0;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.4;
+    transition: var(--transition);
+    cursor: default;
+}
+
+.step.active {
+    opacity: 1;
+}
+
+.step.completed {
+    opacity: 0.8;
+}
+
+.step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.step.active .step-num {
+    background: var(--gold);
+    color: var(--navy);
+    box-shadow: 0 0 0 4px var(--gold-glow);
+}
+
+.step.completed .step-num {
+    background: var(--navy-mid);
+    color: var(--white);
+}
+
+.step-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    white-space: nowrap;
+}
+
+.step.active .step-label {
+    color: var(--navy);
+    font-weight: 600;
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--gray-200);
+    min-width: 20px;
+    transition: var(--transition);
+}
+
+.step-line.active {
+    background: var(--gold);
+}
+
+/* ---------- FORM BODY ---------- */
+.form-body {
+    padding: 0 0 1.5rem;
+}
+
+/* ---------- SECTIONS ---------- */
+.form-section {
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    margin-top: 1.5rem;
+    border: 1px solid var(--gray-100);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.form-section.active {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold-glow), var(--shadow-md);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+    cursor: pointer;
+    user-select: none;
+}
+
+.section-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-header h2 .icon {
+    font-size: 1.2rem;
+}
+
+.btn-collapse {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 0 0.25rem;
+    transition: var(--transition);
+}
+
+.btn-collapse:hover {
+    color: var(--gray-600);
+}
+
+.section-content {
+    padding: 1.5rem;
+    transition: var(--transition);
+    max-height: 5000px;
+    overflow: hidden;
+}
+
+.section-content.collapsed {
+    max-height: 0;
+    padding: 0 1.5rem;
+}
+
+/* ---------- FORM ROWS ---------- */
+.form-row {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.form-row.two-col {
+    grid-template-columns: 1fr 1fr;
+}
+
+.form-row.three-col {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-row.single-col {
+    grid-template-columns: 1fr;
+}
+
+/* ---------- FORM GROUPS ---------- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    letter-spacing: 0.02em;
+}
+
+.form-group label .required {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.form-input {
+    padding: 0.6rem 0.9rem;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: var(--transition);
+    background: var(--white);
+    color: var(--gray-800);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+.form-input:disabled,
+.form-input[readonly] {
+    background: var(--gray-50);
+    color: var(--gray-500);
+    cursor: not-allowed;
+}
+
+.form-input::placeholder {
+    color: var(--gray-400);
+}
+
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364758b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    padding-right: 2.5rem;
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.field-hint {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+    margin-top: 0.2rem;
+}
+
+.error-text {
+    font-size: 0.75rem;
+    color: #ef4444;
+    margin-top: 0.2rem;
+}
+
+/* ---------- BUTTON GROUPS (toggle options) ---------- */
+.btn-group {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.btn-group.wide .btn-option {
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-option {
+    padding: 0.4rem 1rem;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 100px;
+    background: var(--white);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-option:hover {
+    border-color: var(--gray-300);
+    background: var(--gray-50);
+}
+
+.btn-option.active {
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+    box-shadow: 0 2px 8px rgba(10, 22, 40, 0.15);
+}
+
+.btn-option.active:hover {
+    background: var(--navy-light);
+}
+
+/* ---------- TRANSPORT SELECTOR ---------- */
+.transport-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.transport-btn {
+    padding: 0.5rem 1.2rem;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.transport-btn .emoji {
+    font-size: 1.1rem;
+}
+
+.transport-btn:hover {
+    border-color: var(--gray-300);
+    background: var(--gray-50);
+}
+
+.transport-btn.active {
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+    box-shadow: 0 2px 8px rgba(10, 22, 40, 0.15);
+}
+
+.transport-btn.active:hover {
+    background: var(--navy-light);
+}
+
+/* ---------- CHECKBOX ---------- */
+.checkbox-group {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.5rem !important;
+    flex-wrap: wrap;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    position: relative;
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--gray-300);
+    border-radius: 4px;
+    background: var(--white);
+    transition: var(--transition);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkbox-label input:checked+.checkmark {
+    background: var(--navy);
+    border-color: var(--navy);
+}
+
+.checkbox-label input:checked+.checkmark::after {
+    content: '✓';
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.checkbox-label:hover .checkmark {
+    border-color: var(--gold);
+}
+
+.hint {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+}
+
+/* ---------- DIMENSION INPUTS ---------- */
+.dimension-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.dim-input {
+    width: 60px;
+    padding: 0.5rem 0.3rem;
+    text-align: center;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.dim-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+.dim-sep {
+    color: var(--gray-400);
+    font-weight: 300;
+}
+
+/* ---------- SECTION NAVIGATION ---------- */
+.section-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-100);
+}
+
+.btn-prev,
+.btn-next,
+.btn-cancel,
+.btn-draft,
+.btn-confirm {
+    padding: 0.6rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-prev {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.btn-prev:hover {
+    background: var(--gray-200);
+    color: var(--gray-800);
+}
+
+.btn-next {
+    background: var(--navy);
+    color: var(--white);
+}
+
+.btn-next:hover {
+    background: var(--navy-light);
+    box-shadow: 0 4px 12px rgba(10, 22, 40, 0.2);
+}
+
+/* ---------- FORM ACTIONS (bottom) ---------- */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-100);
+    flex-wrap: wrap;
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--gray-500);
+    border: 1.5px solid var(--gray-200);
+}
+
+.btn-cancel:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+
+.btn-draft {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.btn-draft:hover {
+    background: var(--gray-200);
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, var(--gold) 0%, #b8923a 100%);
+    color: var(--navy);
+    box-shadow: 0 4px 16px rgba(201, 168, 76, 0.3);
+}
+
+.btn-confirm:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.4);
+}
+
+.btn-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---------- FOOTER ---------- */
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0 0;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--gray-100);
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-left .divider {
+    color: var(--gray-200);
+}
+
+.footer-right .powered {
+    font-weight: 500;
+    color: var(--gray-500);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 992px) {
+    .form-row.two-col,
+    .form-row.three-col {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .form-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .brand-text h1 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        margin: 1rem auto;
+        padding: 0 1rem 1.5rem;
+        border-radius: var(--radius-sm);
+    }
+
+    .form-header {
+        margin: -1rem -1rem 0;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .stepper {
+        padding: 1rem 1rem 0;
+        gap: 0.25rem;
+    }
+
+    .step-label {
+        font-size: 0.7rem;
+    }
+
+    .step-num {
+        width: 26px;
+        height: 26px;
+        font-size: 0.7rem;
+    }
+
+    .form-row.two-col,
+    .form-row.three-col {
+        grid-template-columns: 1fr;
+    }
+
+    .section-content {
+        padding: 1rem;
+    }
+
+    .section-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .section-header h2 {
+        font-size: 0.9rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions button {
+        justify-content: center;
+    }
+
+    .transport-selector {
+        flex-wrap: wrap;
+    }
+
+    .transport-btn {
+        flex: 1;
+        justify-content: center;
+        min-width: 60px;
+    }
+
+    .btn-group.wide .btn-option {
+        flex: 1 1 auto;
+        min-width: 80px;
+    }
+
+    .dim-input {
+        width: 50px;
+    }
+
+    .section-nav {
+        flex-wrap: wrap;
+    }
+
+    .section-nav button {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        margin: 0.5rem auto;
+        padding: 0 0.5rem 1rem;
+        border-radius: 0;
+    }
+
+    .form-header {
+        margin: -0.5rem -0.5rem 0;
+        padding: 0.75rem 1rem;
+    }
+
+    .brand-text h1 {
+        font-size: 1.1rem;
+    }
+
+    .shipment-badge .number {
+        font-size: 0.8rem;
+    }
+
+    .stepper {
+        padding: 0.75rem 0.5rem 0;
+        gap: 0.15rem;
+    }
+
+    .step-label {
+        font-size: 0.6rem;
+    }
+
+    .step-num {
+        width: 22px;
+        height: 22px;
+        font-size: 0.6rem;
+    }
+
+    .section-content {
+        padding: 0.75rem;
+    }
+
+    .form-input {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.7rem;
+    }
+
+    .btn-option {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.7rem;
+    }
+
+    .transport-btn {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-section.active .section-content {
+    animation: fadeInUp 0.35s ease-out;
+}
+
+@keyframes pulse-glow {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 var(--gold-glow);
+    }
+    50% {
+        box-shadow: 0 0 0 6px transparent;
+    }
+}
+
+.btn-confirm:not(:disabled):hover {
+    animation: pulse-glow 1.2s ease-in-out infinite;
+}
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: #C9A84C;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.theme-toggle:hover {
+  background: rgba(201, 168, 76, 0.1);
+}

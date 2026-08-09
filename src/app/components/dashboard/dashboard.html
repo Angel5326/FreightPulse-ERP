@@ -1,0 +1,76 @@
+<div class="dash-wrapper">
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link active">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
+      <a routerLink="/form" class="nav-link">➕ New Shipment</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== HEADER ===== -->
+  <header class="dash-header">
+    <h2>📊 Command Center</h2>
+    <p>Welcome back, Captain</p>
+  </header>
+
+  <!-- ===== LOADING ===== -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div> Loading fleet data...
+  </div>
+
+  <!-- ===== DASHBOARD CONTENT ===== -->
+  <div *ngIf="!isLoading" class="content">
+    
+    <!-- KPI CARDS -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <h3>Total Shipments</h3>
+        <p>{{ stats.total }}</p>
+        <span>📦</span>
+      </div>
+      <div class="kpi-card gold">
+        <h3>In Transit</h3>
+        <p>{{ stats.inTransit }}</p>
+        <span>🚚</span>
+      </div>
+      <div class="kpi-card">
+        <h3>Delivered</h3>
+        <p>{{ stats.delivered }}</p>
+        <span>✅</span>
+      </div>
+    </div>
+
+    <!-- ===== DOUGHNUT CHART ===== -->
+    <div class="chart-container">
+      <h4>Shipments by Status</h4>
+      <div class="chart-box">
+        <canvas id="shipmentChart"></canvas>
+      </div>
+    </div>
+
+    <!-- ===== LINE CHART (TRENDS) ===== -->
+    <div class="chart-container" style="max-width: 100%; margin-top: 2rem;">
+      <h4>📈 Shipment Trends (Daily)</h4>
+      <div class="chart-box" style="max-height: 250px;">
+        <canvas id="trendChart"></canvas>
+      </div>
+      <!-- ===== WORLD MAP ===== -->
+<div class="map-container" *ngIf="!isLoading">
+  <h4>🌍 Global Shipment Routes</h4>
+  <div id="worldMap" style="height: 400px; width: 100%; border-radius: 16px; border: 1px solid rgba(201,168,76,0.2);"></div>
+</div>
+
+    <!-- ===== ACTION BUTTONS ===== -->
+    <div class="action-row">
+      <a routerLink="/form" class="btn-gold">+ New Shipment</a>
+      <button class="btn-export" (click)="seedData()" style="margin-left: 1rem;">🌱 Seed Random Data</button>
+      <button class="btn-export" (click)="clearData()" style="margin-left: 1rem; border-color: #ef4444; color: #ef4444;">
+        🗑️ Clear All Data
+      </button>
+    </div>
+  </div>
+</div>

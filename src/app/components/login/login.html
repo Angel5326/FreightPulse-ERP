@@ -1,0 +1,126 @@
+<div class="login-wrapper" (mousemove)="onMouseMove($event)">
+  <!-- Animated Background Shapes -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <!-- Main Card -->
+  <div class="login-card" [style.transform]="cardTransform">
+    <div class="glow-ring"></div>
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="logo-symbol">
+        <svg width="48" height="48" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="10" fill="#0a1628" stroke="#C9A84C" stroke-width="1.5"/>
+          <path d="M12 26L20 12L28 26H12Z" fill="white" opacity="0.95"/>
+          <path d="M16 22L20 16L24 22H16Z" fill="#C9A84C"/>
+          <circle cx="20" cy="28" r="2" fill="#C9A84C" opacity="0.6"/>
+          <path d="M10 28L30 28" stroke="#C9A84C" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
+        </svg>
+      </div>
+      <h1>Freight<span>Pulse</span></h1>
+      <p>Secure Global Command Center</p>
+    </div>
+
+    <!-- ========== LOGIN FORM ========== -->
+<form (ngSubmit)="onLogin()" *ngIf="!showSignup" autocomplete="off">
+  <div class="input-group">
+    <label>👤 Username</label>
+    <input
+      type="text"
+      [(ngModel)]="username"
+      name="username"
+      placeholder="Enter your username"
+      required
+      [disabled]="isLoading"
+      autocomplete="off"
+    >
+    <div class="input-glow"></div>
+  </div>
+
+  <div class="input-group password-group">
+    <label>🔒 Password</label>
+    <div class="password-wrapper">
+      <input
+        [type]="showLoginPassword ? 'text' : 'password'"
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Enter your password"
+        required
+        [disabled]="isLoading"
+        autocomplete="new-password"
+      >
+      <span class="eye-icon" (click)="showLoginPassword = !showLoginPassword">
+        {{ showLoginPassword ? '🙈' : '👁️' }}
+      </span>
+    </div>
+    <div class="input-glow"></div>
+  </div>
+
+  <button type="submit" class="btn-gold" [disabled]="isLoading">
+    <span *ngIf="!isLoading">⚡ Access Dashboard</span>
+    <span *ngIf="isLoading" class="spinner-container">
+      <span class="spinner"></span> Logging in...
+    </span>
+  </button>
+</form>
+
+    <!-- Toggle to Signup -->
+    <p class="toggle-link" *ngIf="!showSignup">
+      <span>New to FreightPulse?</span>
+      <a href="#" (click)="toggleSignup($event)">Create an account</a>
+    </p>
+
+    <!-- ========== SIGNUP FORM (Slide Down) ========== -->
+    <div class="signup-panel" [class.open]="showSignup">
+      <div class="divider" *ngIf="showSignup">
+        <span>Start Your Journey</span>
+      </div>
+
+      <form (ngSubmit)="onSignup()" *ngIf="showSignup">
+        <div class="input-group">
+          <label>👤 New Username</label>
+          <input type="text" [(ngModel)]="signupUsername" name="signupUsername" placeholder="Choose a unique ID" required [disabled]="isLoading">
+        </div>
+
+        <div class="input-group password-group">
+          <label>🔒 New Password</label>
+          <div class="password-wrapper">
+            <input [type]="showSignupPassword ? 'text' : 'password'" [(ngModel)]="signupPassword" name="signupPassword" placeholder="Min 4 characters" required [disabled]="isLoading">
+            <span class="eye-icon" (click)="showSignupPassword = !showSignupPassword">
+              {{ showSignupPassword ? '🙈' : '👁️' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="input-group password-group">
+          <label>✅ Confirm Password</label>
+          <div class="password-wrapper">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Re-enter to verify" required [disabled]="isLoading">
+            <span class="eye-icon" (click)="showConfirmPassword = !showConfirmPassword">
+              {{ showConfirmPassword ? '🙈' : '👁️' }}
+            </span>
+          </div>
+          <div *ngIf="confirmPassword && signupPassword && confirmPassword !== signupPassword" class="error-msg">
+            ⚠️ Passwords do not match!
+          </div>
+        </div>
+
+        <button type="submit" class="btn-gold" [disabled]="isLoading || confirmPassword !== signupPassword || !signupUsername || !signupPassword">
+          <span *ngIf="!isLoading">🚀 Launch Account</span>
+          <span *ngIf="isLoading" class="spinner-container"><span class="spinner"></span> Creating...</span>
+        </button>
+
+        <!-- Back to Login -->
+        <p class="toggle-link" style="margin-top: 1rem;">
+          <a href="#" (click)="toggleSignup($event)">← Back to Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

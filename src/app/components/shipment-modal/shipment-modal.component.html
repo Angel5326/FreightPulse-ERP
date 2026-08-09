@@ -1,0 +1,50 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>✏️ Edit Shipment</h2>
+      <button class="close-btn" (click)="close()">✕</button>
+    </div>
+
+    <form (ngSubmit)="save()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Shipment Number</label>
+          <input type="text" [(ngModel)]="shipment.shipment_number" name="shipment_number" readonly>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select [(ngModel)]="shipment.status" name="status">
+            <option value="Draft">📄 Draft</option>
+            <option value="Confirmed">✅ Confirmed</option>
+            <option value="In Transit">🚚 In Transit</option>
+            <option value="Delivered">🏁 Delivered</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Client Name</label>
+          <input type="text" [(ngModel)]="shipment.client_name" name="client_name" placeholder="Enter client name">
+        </div>
+        <div class="form-group">
+          <label>Origin</label>
+          <input type="text" [(ngModel)]="shipment.origin" name="origin" placeholder="e.g., Shanghai">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Destination</label>
+          <input type="text" [(ngModel)]="shipment.destination" name="destination" placeholder="e.g., New York">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="close()">Cancel</button>
+        <button type="submit" class="btn-save" [disabled]="!shipment.client_name">💾 Save Changes</button>
+      </div>
+    </form>
+  </div>
+  <button type="button" class="btn-test" (click)="testSave()">🧪 Test Save</button>
+</div>

@@ -1,0 +1,104 @@
+<!-- ===== NAVIGATION BAR ===== -->
+<nav class="top-nav">
+  <div class="nav-brand">Freight<span>Pulse</span></div>
+  <div class="nav-links">
+    <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+    <a routerLink="/shipments" class="nav-link active">📋 Shipments</a>
+    <a routerLink="/form" class="nav-link">➕ New Shipment</a>
+    <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+    <button class="nav-logout" (click)="logout()">🚪 Logout</button>
+  </div>
+</nav>
+
+<!-- ===== HEADER ===== -->
+<header class="list-header">
+  <h2>📋 Shipment List</h2>
+  <div class="filters">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      placeholder="🔍 Search by client or shipment #..."
+      class="search-input"
+    >
+    <select [(ngModel)]="filterStatus" class="filter-select">
+      <option value="All">All Status</option>
+      <option value="Draft">📄 Draft</option>
+      <option value="Confirmed">✅ Confirmed</option>
+      <option value="In Transit">🚚 In Transit</option>
+      <option value="Delivered">🏁 Delivered</option>
+    </select>
+    <div class="action-buttons">
+      <button class="btn-export" (click)="exportExcel()">📊 Export Excel</button>
+      <button class="btn-export" (click)="exportPdf()">📄 Export PDF</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== LOADING ===== -->
+<div *ngIf="isLoading" class="loading">
+  <div class="spinner"></div> Loading shipments...
+</div>
+
+<!-- ===== EMPTY STATE ===== -->
+<div *ngIf="!isLoading && filteredShipments.length === 0" class="empty-state">
+  <p>🚢 No shipments found matching your filters.</p>
+</div>
+
+<!-- ===== TABLE ===== -->
+<div *ngIf="!isLoading && filteredShipments.length > 0" class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Shipment #</th>
+        <th>Client</th>
+        <th>Origin → Destination</th>
+        <th>Status</th>
+        <th>Timeline</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ship of filteredShipments; let i = index" (click)="openModal(ship)" style="cursor: pointer;">
+        <td>{{ i + 1 }}</td>
+        <td class="shipment-id">{{ ship.shipment_number }}</td>
+        <td>{{ ship.client_name || 'N/A' }}</td>
+        <td>{{ ship.origin || 'N/A' }} → {{ ship.destination || 'N/A' }}</td>
+        <td>
+          <select 
+            class="status-select" 
+            [class.status-draft]="ship.status === 'Draft'"
+            [class.status-confirmed]="ship.status === 'Confirmed'"
+            [class.status-in-transit]="ship.status === 'In Transit'"
+            [class.status-delivered]="ship.status === 'Delivered'"
+            (change)="updateStatus(ship.id, $event)"
+          >
+            <option value="Draft" [selected]="ship.status === 'Draft'">📄 Draft</option>
+            <option value="Confirmed" [selected]="ship.status === 'Confirmed'">✅ Confirmed</option>
+            <option value="In Transit" [selected]="ship.status === 'In Transit'">🚚 In Transit</option>
+            <option value="Delivered" [selected]="ship.status === 'Delivered'">🏁 Delivered</option>
+          </select>
+        </td>
+        <td>
+          <div class="timeline">
+            <span class="dot" [class.active]="ship.status !== 'Draft'">●</span>
+            <span class="dot" [class.active]="ship.status === 'Confirmed' || ship.status === 'In Transit' || ship.status === 'Delivered'">●</span>
+            <span class="dot" [class.active]="ship.status === 'In Transit' || ship.status === 'Delivered'">●</span>
+            <span class="dot" [class.active]="ship.status === 'Delivered'">●</span>
+          </div>
+        </td>
+        <td>
+          <button class="btn-delete" (click)="deleteShipment(ship.id); $event.stopPropagation();">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== MODAL ===== -->
+<app-shipment-modal
+  *ngIf="selectedShipment"
+  [shipment]="selectedShipment"
+  (closeModal)="closeModal()"
+  (shipmentUpdated)="onShipmentUpdated($event)">
+</app-shipment-modal>

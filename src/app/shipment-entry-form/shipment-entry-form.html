@@ -1,0 +1,439 @@
+<!-- ============================================================
+     FILE: shipment-entry-form.component.html
+     DESCRIPTION: Main template for the Freight Forwarding ERP
+                  Shipment Entry Form. Features a glass-morphism
+                  design with animated sections, smart form
+                  controls, and a professional dark-navy & gold
+                  theme.
+     ============================================================ -->
+
+<div class="form-container">
+  
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
+      <a routerLink="/form" class="nav-link active">➕ New Shipment</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== REST OF THE FORM ===== -->
+  <!-- Your existing form header, stepper, and form sections go HERE -->
+    <!-- ===== HEADER / BRANDING ===== -->
+    <header class="form-header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <rect width="40" height="40" rx="10" fill="url(#logoGrad)" />
+                    <path d="M12 26L20 12L28 26H12Z" fill="white" opacity="0.9" />
+                    <path d="M16 22L20 16L24 22H16Z" fill="#C9A84C" />
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#0a1628" />
+                            <stop offset="100%" stop-color="#1a2a4a" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>Freight<span>Pulse</span></h1>
+                <p>ERP · Shipment Entry</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="shipment-badge">
+                <span class="label">Shipment</span>
+                <span class="number">{{ shipmentNumber }}</span>
+            </div>
+            <div class="status-pill status-draft">Draft</div>
+        </div>
+    </header>
+
+    <!-- ===== PROGRESS STEPPER ===== -->
+    <div class="stepper">
+        <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+            <span class="step-num">1</span>
+            <span class="step-label">General</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep > 1"></div>
+        <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+            <span class="step-num">2</span>
+            <span class="step-label">Vessel / Flight</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep > 2"></div>
+        <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
+            <span class="step-num">3</span>
+            <span class="step-label">Cargo</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep > 3"></div>
+        <div class="step" [class.active]="currentStep >= 4">
+            <span class="step-num">4</span>
+            <span class="step-label">Parties & HBL</span>
+        </div>
+    </div>
+
+    <!-- ===== FORM BODY ===== -->
+    <form [formGroup]="shipmentForm" (ngSubmit)="onSubmit()" class="form-body">
+
+        <!-- ==========================================================
+        SECTION 1: GENERAL SHIPMENT DETAILS
+        ========================================================== -->
+        <section class="form-section" [class.active]="currentStep === 1">
+            <div class="section-header">
+                <h2><span class="icon">📦</span> General Shipment Details</h2>
+                <button type="button" class="btn-collapse" (click)="toggleSection(1)">▾</button>
+            </div>
+            <div class="section-content" [class.collapsed]="collapsedSections[1]">
+
+                <!-- Row: Branch + Shipment Type -->
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>Branch <span class="required">*</span></label>
+                        <div class="btn-group">
+                            <button type="button" class="btn-option" [class.active]="formData.branch === 'export'"
+                                (click)="setBranch('export')">Export</button>
+                            <button type="button" class="btn-option" [class.active]="formData.branch === 'cross'"
+                                (click)="setBranch('cross')">Cross Trade</button>
+                            <button type="button" class="btn-option" [class.active]="formData.branch === 'domestic'"
+                                (click)="setBranch('domestic')">Domestic</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Shipment Type <span class="required">*</span></label>
+                        <div class="btn-group">
+                            <button type="button" class="btn-option" [class.active]="formData.shipmentType === 'import'"
+                                (click)="setShipmentType('import')">Import</button>
+                            <button type="button" class="btn-option" [class.active]="formData.shipmentType === 'export'"
+                                (click)="setShipmentType('export')">Export</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row: Client Name + Transport Mode -->
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>Client Name <span class="required">*</span></label>
+                        <input type="text" formControlName="clientName" placeholder="Enter client name"
+                            class="form-input" />
+                        <div class="error-text" *ngIf="shipmentForm.get('clientName')?.invalid && shipmentForm.get('clientName')?.touched">
+                            Client name is required
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Transport Mode <span class="required">*</span></label>
+                        <div class="transport-selector">
+                            <button type="button" class="transport-btn" [class.active]="formData.transportMode === 'sea'"
+                                (click)="setTransportMode('sea')">
+                                <span class="emoji">🚢</span> Sea
+                            </button>
+                            <button type="button" class="transport-btn" [class.active]="formData.transportMode === 'air'"
+                                (click)="setTransportMode('air')">
+                                <span class="emoji">✈️</span> Air
+                            </button>
+                            <button type="button" class="transport-btn" [class.active]="formData.transportMode === 'road'"
+                                (click)="setTransportMode('road')">
+                                <span class="emoji">🚛</span> Road
+                            </button>
+                            <button type="button" class="transport-btn" [class.active]="formData.transportMode === 'rail'"
+                                (click)="setTransportMode('rail')">
+                                <span class="emoji">🚆</span> Rail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row: Origin + Destination -->
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>Origin <span class="required">*</span></label>
+                        <input type="text" formControlName="origin" placeholder="e.g. Shanghai, CN" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>Destination <span class="required">*</span></label>
+                        <input type="text" formControlName="destination" placeholder="e.g. Los Angeles, US"
+                            class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Row: ETD + ETA -->
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>ETD (Estimated Departure) <span class="required">*</span></label>
+                        <input type="datetime-local" formControlName="etd" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>ETA (Estimated Arrival) <span class="required">*</span></label>
+                        <input type="datetime-local" formControlName="eta" class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Row: Service Type -->
+                <div class="form-row single-col">
+                    <div class="form-group">
+                        <label>Service Type <span class="required">*</span></label>
+                        <div class="btn-group wide">
+                            <button type="button" class="btn-option" [class.active]="formData.serviceType === 'doorToDoor'"
+                                (click)="setServiceType('doorToDoor')">🚪 Door to Door</button>
+                            <button type="button" class="btn-option" [class.active]="formData.serviceType === 'portToDoor'"
+                                (click)="setServiceType('portToDoor')">⚓ Port to Door</button>
+                            <button type="button" class="btn-option" [class.active]="formData.serviceType === 'doorToPort'"
+                                (click)="setServiceType('doorToPort')">🚪 Door to Port</button>
+                            <button type="button" class="btn-option" [class.active]="formData.serviceType === 'portToPort'"
+                                (click)="setServiceType('portToPort')">⚓ Port to Port</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="section-nav">
+                    <button type="button" class="btn-next" (click)="nextStep()">Next Step →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================
+        SECTION 2: PLANNED VESSEL / FLIGHT DETAILS
+        ========================================================== -->
+        <section class="form-section" [class.active]="currentStep === 2">
+            <div class="section-header">
+                <h2><span class="icon">⛴️</span> Planned Vessel / Flight Details</h2>
+                <button type="button" class="btn-collapse" (click)="toggleSection(2)">▾</button>
+            </div>
+            <div class="section-content" [class.collapsed]="collapsedSections[2]">
+
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>Carrier <span class="required">*</span></label>
+                        <input type="text" formControlName="carrier" placeholder="e.g. Maersk, Emirates" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>Vessel / Flight # <span class="required">*</span></label>
+                        <input type="text" formControlName="vesselFlight" placeholder="e.g. MSC Beatrice / EK 123" class="form-input" />
+                    </div>
+                </div>
+
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>POL (Port of Loading) <span class="required">*</span></label>
+                        <input type="text" formControlName="pol" placeholder="e.g. Shanghai, CN" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>POD (Port of Discharge) <span class="required">*</span></label>
+                        <input type="text" formControlName="pod" placeholder="e.g. Los Angeles, US" class="form-input" />
+                    </div>
+                </div>
+
+                <!-- Confirmation toggle -->
+                <div class="form-row single-col">
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" formControlName="confirmed" />
+                            <span class="checkmark"></span>
+                            Confirmed Booking
+                        </label>
+                        <span class="hint">Check if booking is confirmed by carrier</span>
+                    </div>
+                </div>
+
+                <div class="section-nav">
+                    <button type="button" class="btn-prev" (click)="prevStep()">← Previous</button>
+                    <button type="button" class="btn-next" (click)="nextStep()">Next Step →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================
+        SECTION 3: CARGO DETAILS
+        ========================================================== -->
+        <section class="form-section" [class.active]="currentStep === 3">
+            <div class="section-header">
+                <h2><span class="icon">📦</span> Cargo Details</h2>
+                <button type="button" class="btn-collapse" (click)="toggleSection(3)">▾</button>
+            </div>
+            <div class="section-content" [class.collapsed]="collapsedSections[3]">
+
+                <div class="form-row three-col">
+                    <div class="form-group">
+                        <label>No. of Packages <span class="required">*</span></label>
+                        <input type="number" formControlName="packages" min="1" class="form-input"
+                            (input)="calculateVolume()" />
+                    </div>
+                    <div class="form-group">
+                        <label>Gross Weight (kg) <span class="required">*</span></label>
+                        <input type="number" formControlName="grossWeight" min="0" step="0.1" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>Net Weight (kg)</label>
+                        <input type="number" formControlName="netWeight" min="0" step="0.1" class="form-input" />
+                    </div>
+                </div>
+
+                <div class="form-row three-col">
+                    <div class="form-group">
+                        <label>Package Type <span class="required">*</span></label>
+                        <select formControlName="packageType" class="form-input">
+                            <option value="">Select type</option>
+                            <option value="cartons">Cartons</option>
+                            <option value="pallets">Pallets</option>
+                            <option value="drums">Drums</option>
+                            <option value="containers">Containers</option>
+                            <option value="rolls">Rolls</option>
+                            <option value="bundles">Bundles</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Volume (CBM)</label>
+                        <input type="number" formControlName="volume" min="0" step="0.01" class="form-input" readonly />
+                        <span class="field-hint">Auto-calculated from dimensions</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Dimensions (L × W × H) cm</label>
+                        <div class="dimension-inputs">
+                            <input type="number" formControlName="dimLength" placeholder="L" class="dim-input"
+                                (input)="calculateVolume()" />
+                            <span class="dim-sep">×</span>
+                            <input type="number" formControlName="dimWidth" placeholder="W" class="dim-input"
+                                (input)="calculateVolume()" />
+                            <span class="dim-sep">×</span>
+                            <input type="number" formControlName="dimHeight" placeholder="H" class="dim-input"
+                                (input)="calculateVolume()" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row two-col">
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" formControlName="hazardous" />
+                            <span class="checkmark"></span>
+                            Hazardous Cargo
+                        </label>
+                        <span class="hint">Check if cargo contains hazardous materials</span>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" formControlName="temperatureControlled" />
+                            <span class="checkmark"></span>
+                            Temperature Controlled
+                        </label>
+                        <span class="hint">Check if cargo requires temperature control</span>
+                    </div>
+                </div>
+
+                <div class="form-row single-col">
+                    <div class="form-group">
+                        <label>HS Code / Commodity Code</label>
+                        <input type="text" formControlName="hsCode" placeholder="e.g. 8471.30.0100" class="form-input" />
+                    </div>
+                </div>
+
+                <div class="form-row single-col">
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        <textarea formControlName="remark" rows="3" placeholder="Any special instructions or remarks..."
+                            class="form-input"></textarea>
+                    </div>
+                </div>
+
+                <div class="section-nav">
+                    <button type="button" class="btn-prev" (click)="prevStep()">← Previous</button>
+                    <button type="button" class="btn-next" (click)="nextStep()">Next Step →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================================
+        SECTION 4: PARTIES & HBL INFO
+        ========================================================== -->
+        <section class="form-section" [class.active]="currentStep === 4">
+            <div class="section-header">
+                <h2><span class="icon">👥</span> Parties &amp; HBL Info</h2>
+                <button type="button" class="btn-collapse" (click)="toggleSection(4)">▾</button>
+            </div>
+            <div class="section-content" [class.collapsed]="collapsedSections[4]">
+
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>Shipper <span class="required">*</span></label>
+                        <input type="text" formControlName="shipper" placeholder="Full shipper name & address"
+                            class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>Consignee <span class="required">*</span></label>
+                        <input type="text" formControlName="consignee" placeholder="Full consignee name & address"
+                            class="form-input" />
+                    </div>
+                </div>
+
+                <div class="form-row two-col">
+                    <div class="form-group">
+                        <label>HBL Type</label>
+                        <div class="btn-group">
+                            <button type="button" class="btn-option" [class.active]="formData.hblType === 'master'"
+                                (click)="setHblType('master')">Master</button>
+                            <button type="button" class="btn-option" [class.active]="formData.hblType === 'house'"
+                                (click)="setHblType('house')">House</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>HBL Number</label>
+                        <input type="text" formControlName="hblNumber" placeholder="Auto-generated or manual"
+                            class="form-input" />
+                        <span class="field-hint">Auto-generated if left blank</span>
+                    </div>
+                </div>
+
+                <div class="form-row three-col">
+                    <div class="form-group">
+                        <label>Booking Ref / Date</label>
+                        <input type="text" formControlName="bookingRef" placeholder="e.g. BK-2025-001" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>Payable At</label>
+                        <input type="text" formControlName="payableAt" placeholder="Location" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>Dispatch At</label>
+                        <input type="text" formControlName="dispatchAt" placeholder="Location" class="form-input" />
+                    </div>
+                </div>
+
+                <div class="form-row single-col">
+                    <div class="form-group">
+                        <label>Remarks</label>
+                        <textarea formControlName="partiesRemark" rows="3"
+                            placeholder="Additional notes for parties or HBL..." class="form-input"></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn-prev" (click)="prevStep()">← Previous</button>
+                    <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                    <button type="button" class="btn-draft" (click)="onSaveDraft()">💾 Save Draft</button>
+                    <button type="submit" class="btn-confirm" [disabled]="shipmentForm.invalid">
+                        ✓ Confirm &amp; Create HBL
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </form>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="form-footer">
+        <div class="footer-left">
+            <span class="version">v2.4.1</span>
+            <span class="divider">|</span>
+            <span class="last-saved">Last saved: {{ lastSaved | date:'medium' }}</span>
+        </div>
+        <div class="footer-right">
+            <span class="powered">FreightPulse ERP</span>
+        </div>
+        <a routerLink="/dashboard" class="btn-gold">📊 Go to Dashboard</a>
+    </footer>
+</div>

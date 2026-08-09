@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+/* ===== FREIGHTPULSE GLOBAL STYLES ===== */
+
+/* Leaflet CSS for the map */
+@import 'leaflet/dist/leaflet.css';
+
+/* Dark Theme (Default) */
+:root {
+  --bg-primary: #0a1628;
+  --bg-secondary: #1a2a4a;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --border-color: #2a3f6a;
+}
+
+/* Light Theme */
+.light-theme {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --text-primary: #0a1628;
+  --text-secondary: #475569;
+  --card-bg: rgba(0, 0, 0, 0.03);
+  --border-color: #cbd5e1;
+}

@@ -1,0 +1,149 @@
+/* ===== DASHBOARD STYLES ===== */
+.dash-wrapper {
+  padding: 2rem;
+  background: var(--bg-primary);  /* 👈 Changed from #0a1628 */
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);      /* 👈 Changed from white */
+}
+
+.dash-header h2 {
+  font-size: 2rem;
+  color: #C9A84C;
+}
+
+.dash-header p {
+  color: var(--text-secondary);
+}
+
+/* KPI Cards */
+.kpi-card {
+  background: var(--card-bg);       /* 👈 Changed from rgba(255,255,255,0.05) */
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  position: relative;
+  transition: 0.3s;
+}
+
+.kpi-card h3 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.kpi-card p {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0.2rem 0;
+  color: var(--text-primary);
+}
+.kpi-card span {
+  font-size: 2rem;
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+  opacity: 0.3;
+}
+.kpi-card.gold p {
+  color: #C9A84C;
+}
+
+/* Chart */
+.chart-container {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  max-width: 500px;
+}
+.chart-container h4 {
+  color: var(--text-secondary);
+}
+
+.loading {
+  color: var(--text-secondary);
+}
+
+.btn-gold {
+  background: #C9A84C;
+  color: #0a1628;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ===== DOUGHNUT & LINE CHARTS ===== */
+.chart-container {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  max-width: 500px;
+  margin-top: 1.5rem;
+}
+
+.chart-container h4 {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.chart-box {
+  max-height: 300px;
+  position: relative;
+}
+
+/* ===== ACTION ROW ===== */
+.action-row {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-gold {
+  background: #C9A84C;
+  color: #0a1628;
+  padding: 0.8rem 2rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-export {
+  background: transparent;
+  border: 1.5px solid #C9A84C;
+  color: #C9A84C;
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-export:hover {
+  background: #C9A84C;
+  color: #0a1628;
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.2);
+}
+
+.btn-export.clear {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.btn-export.clear:hover {
+  background: #ef4444;
+  color: white;
+}
