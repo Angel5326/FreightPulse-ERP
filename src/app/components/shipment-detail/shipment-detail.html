@@ -1,0 +1,132 @@
+<div class="dash-wrapper">
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link active">📋 Shipments</a>
+      <a routerLink="/clients" class="nav-link">👥 Clients</a>
+      <a routerLink="/invoices" class="nav-link">🧾 Invoices</a>
+      <a routerLink="/analytics" class="nav-link">📈 Analytics</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪</button>
+    </div>
+  </nav>
+
+  <div *ngIf="isLoading" class="loading"><div class="spinner"></div> Loading...</div>
+
+  <div *ngIf="!isLoading && shipment" class="detail-grid">
+    <!-- LEFT COLUMN -->
+    <div class="detail-main">
+      <header class="detail-header">
+        <div>
+          <h1>{{ shipment.shipment_number }}</h1>
+          <p class="muted">{{ shipment.client_name }} · {{ shipment.origin }} → {{ shipment.destination }}</p>
+        </div>
+        <span class="status-badge">{{ shipment.status }}</span>
+      </header>
+
+      <div class="kpi-grid">
+        <div class="kpi"><label>Carrier</label><span>{{ shipment.carrier || '—' }}</span></div>
+        <div class="kpi"><label>Vessel/Flight</label><span>{{ shipment.vessel_flight || '—' }}</span></div>
+        <div class="kpi"><label>ETD</label><span>{{ shipment.etd | date:'short' }}</span></div>
+        <div class="kpi"><label>ETA</label><span>{{ shipment.eta | date:'short' }}</span></div>
+        <div class="kpi"><label>Total Value</label><span>{{ shipment.currency }} {{ shipment.total_value | number:'1.2-2' }}</span></div>
+        <div class="kpi"><label>Payment</label><span class="pay-status">{{ shipment.payment_status }}</span></div>
+      </div>
+
+      <div class="tabs">
+        <button [class.active]="activeTab==='items'" (click)="activeTab='items'">📦 Items ({{ shipment.items?.length || 0 }})</button>
+        <button [class.active]="activeTab==='events'" (click)="activeTab='events'">📍 Timeline ({{ shipment.events?.length || 0 }})</button>
+      </div>
+
+      <!-- ITEMS TAB -->
+      <div *ngIf="activeTab==='items'" class="tab-content">
+        <div class="add-item-grid">
+          <input [(ngModel)]="newItem.description" placeholder="Description *">
+          <input type="number" [(ngModel)]="newItem.quantity" placeholder="Qty">
+          <input type="number" [(ngModel)]="newItem.weight_kg" placeholder="Weight kg">
+          <input type="number" [(ngModel)]="newItem.declared_value" placeholder="Value">
+          <input [(ngModel)]="newItem.hs_code" placeholder="HS Code">
+          <select [(ngModel)]="newItem.package_type">
+            <option>Cartons</option><option>Pallets</option><option>Drums</option><option>Bags</option>
+          </select>
+          <button class="btn-gold" (click)="addItem()">➕ Add</button>
+        </div>
+
+        <table *ngIf="shipment.items?.length">
+          <thead><tr><th>Description</th><th>Qty</th><th>Weight</th><th>Value</th><th>HS Code</th><th>Package</th><th></th></tr></thead>
+          <tbody>
+            <tr *ngFor="let i of shipment.items">
+              <td>{{ i.description }}</td>
+              <td>{{ i.quantity }}</td>
+              <td>{{ i.weight_kg }} kg</td>
+              <td>${{ i.declared_value | number:'1.2-2' }}</td>
+              <td class="mono">{{ i.hs_code || '—' }}</td>
+              <td>{{ i.package_type }}</td>
+              <td><button class="btn-icon" (click)="delItem(i.id)">🗑️</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="!shipment.items?.length" class="empty">No items yet. Add cargo items above.</p>
+      </div>
+
+      <!-- TIMELINE TAB -->
+      <div *ngIf="activeTab==='events'" class="tab-content">
+        <div class="add-item-grid">
+          <select [(ngModel)]="newEvent.status">
+            <option>Booked</option><option>Confirmed</option><option>Picked Up</option>
+            <option>In Transit</option><option>Customs</option><option>Out for Delivery</option><option>Delivered</option>
+          </select>
+          <input [(ngModel)]="newEvent.location" placeholder="Location">
+          <input [(ngModel)]="newEvent.notes" placeholder="Notes">
+          <button class="btn-gold" (click)="addEvent()">➕ Add Event</button>
+        </div>
+        <div class="timeline-list">
+          <div class="timeline-item" *ngFor="let e of shipment.events">
+            <div class="dot"></div>
+            <div class="timeline-content">
+              <strong>{{ e.status }}</strong>
+              <span class="loc">📍 {{ e.location || '—' }}</span>
+              <p>{{ e.notes }}</p>
+              <small>{{ e.created_at | date:'medium' }} · by {{ e.created_by }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: AI RISK + ACTIONS -->
+    <div class="detail-side">
+      <div class="risk-card" *ngIf="delayRisk" [ngClass]="'risk-'+delayRisk.risk_level.toLowerCase()">
+        <h4>🤖 AI Delay Risk</h4>
+        <div class="risk-score">{{ delayRisk.risk_score }}%</div>
+        <div class="risk-level">{{ delayRisk.risk_level }}</div>
+        <ul>
+          <li *ngFor="let f of delayRisk.factors">⚠️ {{ f }}</li>
+        </ul>
+      </div>
+
+      <div class="action-card">
+        <h4>⚡ Actions</h4>
+        <button class="btn-gold full" (click)="openInvoice()">🧾 Generate Invoice</button>
+        <a routerLink="/shipments" class="btn-outline full">← Back to List</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVOICE MODAL -->
+  <div class="modal-overlay" *ngIf="showInvoiceModal" (click)="showInvoiceModal=false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>🧾 Generate Invoice</h3>
+      <input type="number" [(ngModel)]="invoiceForm.amount" placeholder="Amount">
+      <input type="number" [(ngModel)]="invoiceForm.tax_rate" placeholder="Tax Rate (0.18 = 18%)">
+      <textarea [(ngModel)]="invoiceForm.notes" placeholder="Notes"></textarea>
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="showInvoiceModal=false">Cancel</button>
+        <button class="btn-save" (click)="createInvoice()">Generate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a routerLink="/admin-panel" class="nav-link" *ngIf="isAdmin">🛡️ Admin</a>

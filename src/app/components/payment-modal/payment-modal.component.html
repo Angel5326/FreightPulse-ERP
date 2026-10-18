@@ -1,0 +1,56 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>💰 Record Payment</h2>
+      <button class="close-btn" (click)="close()">✕</button>
+    </div>
+
+    <div class="invoice-summary">
+      <div><span>Invoice #</span><strong>{{ invoice.invoice_number }}</strong></div>
+      <div><span>Total</span><strong>${{ invoice.total | number:'1.2-2' }}</strong></div>
+      <div><span>Paid</span><strong class="paid">${{ invoice.paid_amount | number:'1.2-2' }}</strong></div>
+      <div><span>Balance</span><strong class="balance">${{ invoice.balance | number:'1.2-2' }}</strong></div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Amount *</label>
+        <input type="number" [(ngModel)]="form.amount" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label>Method</label>
+        <select [(ngModel)]="form.method">
+          <option>Bank Transfer</option>
+          <option>Credit Card</option>
+          <option>Cheque</option>
+          <option>Cash</option>
+          <option>Wire</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>Reference</label>
+        <input [(ngModel)]="form.reference" placeholder="e.g., TXN-2026-XYZ">
+      </div>
+      <div class="field full">
+        <label>Notes</label>
+        <textarea [(ngModel)]="form.notes" rows="2"></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-cancel" (click)="close()">Close</button>
+      <button class="btn-save" (click)="record()">💾 Record Payment</button>
+    </div>
+
+    <div class="history" *ngIf="payments.length > 0">
+      <h4>Payment History</h4>
+      <div class="payment-row" *ngFor="let p of payments">
+        <div><strong>${{ p.amount | number:'1.2-2' }}</strong><span>{{ p.method }}</span></div>
+        <div class="right">
+          <span>{{ p.paid_date | date:'short' }}</span>
+          <small *ngIf="p.reference">Ref: {{ p.reference }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

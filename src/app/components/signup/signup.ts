@@ -50,3 +50,16 @@ export class Signup {
     });
   }
 }
+
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
+
+// In constructor:
+@Inject(PLATFORM_ID) private pid: Object
+
+// Add this getter:
+get isAdmin(): boolean {
+  if (!isPlatformBrowser(this.pid)) return false;
+  const u = JSON.parse(localStorage.getItem('user') || '{}');
+  return u.role === 'admin';
+}

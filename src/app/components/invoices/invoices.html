@@ -1,0 +1,64 @@
+<div class="dash-wrapper">
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
+      <a routerLink="/clients" class="nav-link">👥 Clients</a>
+      <a routerLink="/invoices" class="nav-link active">🧾 Invoices</a>
+      <a routerLink="/analytics" class="nav-link">📈 Analytics</a>
+      <a routerLink="/activity-log" class="nav-link">📜 Activity</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪</button>
+      <app-payment-modal
+  *ngIf="selectedInvoice"
+  [invoice]="selectedInvoice"
+  (closeModal)="selectedInvoice = null"
+  (paymentRecorded)="load()">
+</app-payment-modal>
+    </div>
+  </nav>
+
+  <header class="list-header">
+    <h2>🧾 Invoices</h2>
+    <select [(ngModel)]="filterStatus" (change)="load()" class="search-input">
+      <option value="All">All Status</option>
+      <option value="Unpaid">🔴 Unpaid</option>
+      <option value="Paid">🟢 Paid</option>
+    </select>
+  </header>
+
+  <div *ngIf="isLoading" class="loading"><div class="spinner"></div> Loading...</div>
+
+  <div *ngIf="!isLoading" class="table-container">
+    <table>
+      <thead><tr>
+        <th>Invoice #</th><th>Client</th><th>Amount</th><th>Tax</th><th>Total</th>
+        <th>Currency</th><th>Status</th><th>Due Date</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        <tr *ngFor="let i of invoices">
+          <td class="mono">{{ i.invoice_number }}</td>
+          <td>{{ i.client_name || '—' }}</td>
+          <td>${{ i.amount | number:'1.2-2' }}</td>
+          <td>${{ i.tax | number:'1.2-2' }}</td>
+          <td><strong>${{ i.total | number:'1.2-2' }}</strong></td>
+          <td>{{ i.currency }}</td>
+          <td>
+            <span class="badge" [ngClass]="i.status === 'Paid' ? 'badge-paid' : 'badge-unpaid'">
+              {{ i.status }}
+            </span>
+          </td>
+          <td>{{ i.due_date | date:'short' }}</td>
+          <td>
+            <button *ngIf="i.status !== 'Paid'" class="btn-icon" (click)="openPayment(i)" title="Record Payment">💰</button>
+            <button class="btn-icon" (click)="del(i.id)" title="Delete">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<a routerLink="/admin-panel" class="nav-link" *ngIf="isAdmin">🛡️ Admin</a>
+

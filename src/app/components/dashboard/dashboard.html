@@ -6,6 +6,8 @@
       <a routerLink="/dashboard" class="nav-link active">📊 Dashboard</a>
       <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
       <a routerLink="/form" class="nav-link">➕ New Shipment</a>
+      <a routerLink="/clients" class="nav-link">👥 Clients</a>
+<a routerLink="/invoices" class="nav-link">🧾 Invoices</a>
       <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
       <button class="nav-logout" (click)="logout()">🚪 Logout</button>
     </div>
@@ -74,3 +76,7 @@
     </div>
   </div>
 </div>
+
+<a routerLink="/analytics" class="nav-link">📈 Analytics</a>
+<a routerLink="/activity-log" class="nav-link">📜 Activity</a>
+<a routerLink="/admin-panel" class="nav-link" *ngIf="isAdmin">🛡️ Admin</a>

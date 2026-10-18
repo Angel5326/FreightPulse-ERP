@@ -1,0 +1,159 @@
+<div class="dash-wrapper">
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
+      <a routerLink="/clients" class="nav-link">👥 Clients</a>
+      <a routerLink="/invoices" class="nav-link">🧾 Invoices</a>
+      <a routerLink="/payments" class="nav-link">💰 Payments</a>
+      <a routerLink="/analytics" class="nav-link">📈 Analytics</a>
+      <a routerLink="/activity-log" class="nav-link">📜 Activity</a>
+      <a routerLink="/admin-panel" class="nav-link active" *ngIf="isAdmin">🛡️ Admin</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪</button>
+    </div>
+  </nav>
+
+  <header class="list-header">
+    <h2>🛡️ Admin Control Panel</h2>
+    <p class="subtitle">System-wide management across all organizations</p>
+  </header>
+
+  <div class="tabs">
+    <button [class.active]="activeTab==='overview'" (click)="activeTab='overview'">📊 Overview</button>
+    <button [class.active]="activeTab==='users'" (click)="activeTab='users'">👤 Users ({{ users.length }})</button>
+    <button [class.active]="activeTab==='orgs'" (click)="activeTab='orgs'">🏢 Organizations ({{ orgs.length }})</button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading"><div class="spinner"></div> Loading...</div>
+
+  <div *ngIf="!isLoading && activeTab==='overview'" class="overview-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👤</div>
+      <div class="stat-value">{{ stats.totalUsers }}</div>
+      <div class="stat-label">Total Users</div>
+      <div class="stat-sub">{{ stats.activeUsers }} active</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-icon">🏢</div>
+      <div class="stat-value">{{ stats.totalOrganizations }}</div>
+      <div class="stat-label">Organizations</div>
+      <div class="stat-sub">{{ stats.activeOrganizations }} active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-value">{{ stats.totalShipments }}</div>
+      <div class="stat-label">Shipments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">{{ stats.totalClients }}</div>
+      <div class="stat-label">Clients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🧾</div>
+      <div class="stat-value">{{ stats.totalInvoices }}</div>
+      <div class="stat-label">Invoices</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-icon">💰</div>
+      <div class="stat-value">${{ stats.totalRevenue | number:'1.0-0' }}</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔐</div>
+      <div class="stat-value">{{ stats.recentLogins }}</div>
+      <div class="stat-label">Logins (7 days)</div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && activeTab==='users'" class="tab-content">
+    <div class="toolbar">
+      <input type="text" [(ngModel)]="searchUser" placeholder="🔍 Search users..." class="search-input">
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Organization</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last Login</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of filteredUsers">
+            <td><strong>{{ u.username }}</strong></td>
+            <td>{{ u.email || '—' }}</td>
+            <td>{{ u.organization }}</td>
+            <td>
+              <select [value]="u.role" (change)="changeRole(u, $any($event.target).value)" class="role-select" [class.role-admin]="u.role==='admin'">
+                <option value="user">👤 User</option>
+                <option value="admin">🛡️ Admin</option>
+              </select>
+            </td>
+            <td>
+              <span class="status-pill" [class.active]="u.is_active" [class.inactive]="!u.is_active">
+                {{ u.is_active ? '✅ Active' : '🚫 Disabled' }}
+              </span>
+            </td>
+            <td>{{ u.last_login ? (u.last_login | date:'short') : 'Never' }}</td>
+            <td>
+              <button class="btn-icon" (click)="toggleUserActive(u)" [title]="u.is_active ? 'Disable' : 'Activate'">
+                {{ u.is_active ? '🚫' : '✅' }}
+              </button>
+              <button class="btn-icon" (click)="deleteUser(u)" title="Delete">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && activeTab==='orgs'" class="tab-content">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Organization</th>
+            <th>Slug</th>
+            <th>Plan</th>
+            <th>Users</th>
+            <th>Shipments</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of orgs">
+            <td><strong>{{ o.name }}</strong></td>
+            <td class="mono">{{ o.slug }}</td>
+            <td>
+              <select [value]="o.plan" (change)="changeOrgPlan(o, $any($event.target).value)" class="role-select" [class.plan-enterprise]="o.plan==='enterprise'">
+                <option value="free">Free</option>
+                <option value="pro">Pro</option>
+                <option value="enterprise">Enterprise</option>
+              </select>
+            </td>
+            <td>{{ o.users }}</td>
+            <td>{{ o.shipments }}</td>
+            <td>
+              <span class="status-pill" [class.active]="o.is_active" [class.inactive]="!o.is_active">
+                {{ o.is_active ? '✅ Active' : '🚫 Disabled' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn-icon" (click)="toggleOrgActive(o)">
+                {{ o.is_active ? '🚫' : '✅' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

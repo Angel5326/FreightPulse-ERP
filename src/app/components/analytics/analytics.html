@@ -1,0 +1,33 @@
+<div class="dash-wrapper">
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
+      <a routerLink="/analytics" class="nav-link active">📈 Analytics</a>
+      <a routerLink="/form" class="nav-link">➕ New Shipment</a>
+      <a routerLink="/activity-log" class="nav-link">📜 Activity</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <header class="dash-header">
+    <h2>📈 Advanced Analytics</h2>
+    <p>Deep business intelligence insights</p>
+  </header>
+
+  <div *ngIf="isLoading" class="loading"><div class="spinner"></div> Loading analytics...</div>
+
+  <div *ngIf="!isLoading" class="charts-grid">
+    <div class="chart-container">
+      <h4>🏆 Top 5 Clients by Shipments</h4>
+      <div class="chart-box"><canvas id="topClientsChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <h4>🛣️ Top 5 Routes</h4>
+      <div class="chart-box"><canvas id="topRoutesChart"></canvas></div>
+    </div>
+  </div>
+</div>
+<a routerLink="/admin-panel" class="nav-link" *ngIf="isAdmin">🛡️ Admin</a>

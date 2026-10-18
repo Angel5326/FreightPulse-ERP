@@ -1,0 +1,58 @@
+<div class="dash-wrapper">
+  <nav class="top-nav">
+    <div class="nav-brand">Freight<span>Pulse</span></div>
+    <div class="nav-links">
+      <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+      <a routerLink="/shipments" class="nav-link">📋 Shipments</a>
+      <a routerLink="/clients" class="nav-link">👥 Clients</a>
+      <a routerLink="/invoices" class="nav-link">🧾 Invoices</a>
+      <a routerLink="/payments" class="nav-link active">💰 Payments</a>
+      <a routerLink="/analytics" class="nav-link">📈 Analytics</a>
+      <a routerLink="/activity-log" class="nav-link">📜 Activity</a>
+      <button class="theme-toggle" (click)="toggleTheme()">🌓</button>
+      <button class="nav-logout" (click)="logout()">🚪</button>
+    </div>
+  </nav>
+
+  <header class="list-header">
+    <h2>💰 Payment History</h2>
+    <p class="subtitle">All recorded payments across invoices</p>
+  </header>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div> Loading payments...
+  </div>
+
+  <div *ngIf="!isLoading && payments.length === 0" class="empty-state">
+    <p>💳 No payments recorded yet.</p>
+    <a routerLink="/invoices" class="btn-gold">Go to Invoices →</a>
+  </div>
+
+  <div *ngIf="!isLoading && payments.length > 0" class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Invoice #</th>
+          <th>Client</th>
+          <th>Amount</th>
+          <th>Method</th>
+          <th>Reference</th>
+          <th>Recorded By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of payments">
+          <td>{{ p.paid_date | date:'short' }}</td>
+          <td class="mono">{{ p.invoice_number }}</td>
+          <td>{{ p.client_name }}</td>
+          <td class="amount">${{ p.amount | number:'1.2-2' }}</td>
+          <td>{{ p.method }}</td>
+          <td class="mono">{{ p.reference || '—' }}</td>
+          <td>{{ p.recorded_by }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<a routerLink="/admin-panel" class="nav-link" *ngIf="isAdmin">🛡️ Admin</a>

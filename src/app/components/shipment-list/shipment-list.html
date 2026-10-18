@@ -14,25 +14,58 @@
 <header class="list-header">
   <h2>📋 Shipment List</h2>
   <div class="filters">
-    <input 
-      type="text" 
-      [(ngModel)]="searchTerm" 
-      placeholder="🔍 Search by client or shipment #..."
-      class="search-input"
-    >
-    <select [(ngModel)]="filterStatus" class="filter-select">
+    <input type="text" [(ngModel)]="searchTerm" (input)="applyFilters()"
+           placeholder="🔍 Search by #, client, route..." class="search-input">
+    <select [(ngModel)]="filterStatus" (change)="applyFilters()" class="filter-select">
       <option value="All">All Status</option>
-      <option value="Draft">📄 Draft</option>
+      <option value="Booked">📦 Booked</option>
       <option value="Confirmed">✅ Confirmed</option>
       <option value="In Transit">🚚 In Transit</option>
       <option value="Delivered">🏁 Delivered</option>
     </select>
+    <button class="btn-outline" (click)="showAdvanced = !showAdvanced">
+      {{ showAdvanced ? '▲ Less Filters' : '▼ Advanced Filters' }}
+    </button>
     <div class="action-buttons">
-      <button class="btn-export" (click)="exportExcel()">📊 Export Excel</button>
-      <button class="btn-export" (click)="exportPdf()">📄 Export PDF</button>
+      <button class="btn-export" (click)="exportExcel()">📊 Excel</button>
+      <button class="btn-export" (click)="exportPdf()">📄 PDF</button>
     </div>
   </div>
 </header>
+
+<div class="advanced-panel" *ngIf="showAdvanced">
+  <div class="filter-row">
+    <div class="filter-field">
+      <label>From Date</label>
+      <input type="date" [(ngModel)]="filterFromDate" (change)="applyFilters()">
+    </div>
+    <div class="filter-field">
+      <label>To Date</label>
+      <input type="date" [(ngModel)]="filterToDate" (change)="applyFilters()">
+    </div>
+    <div class="filter-field">
+      <label>Min Value ($)</label>
+      <input type="number" [(ngModel)]="filterMinValue" (change)="applyFilters()" placeholder="0">
+    </div>
+    <div class="filter-field">
+      <label>Max Value ($)</label>
+      <input type="number" [(ngModel)]="filterMaxValue" (change)="applyFilters()" placeholder="100000">
+    </div>
+    <div class="filter-field">
+      <label>Origin</label>
+      <input type="text" [(ngModel)]="filterOrigin" (input)="applyFilters()" placeholder="e.g. Shanghai">
+    </div>
+    <div class="filter-field">
+      <label>Destination</label>
+      <input type="text" [(ngModel)]="filterDestination" (input)="applyFilters()" placeholder="e.g. Tokyo">
+    </div>
+    <div class="filter-field">
+      <label>Carrier</label>
+      <input type="text" [(ngModel)]="filterCarrier" (input)="applyFilters()" placeholder="e.g. Maersk">
+    </div>
+  </div>
+  <button class="btn-clear" (click)="clearFilters()">🗑️ Clear All Filters</button>
+</div>
 
 <!-- ===== LOADING ===== -->
 <div *ngIf="isLoading" class="loading">
@@ -59,7 +92,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let ship of filteredShipments; let i = index" (click)="openModal(ship)" style="cursor: pointer;">
+      <tr *ngFor="let ship of filteredShipments; let i = index" 
+    (click)="router.navigate(['/shipment', ship.id])" 
+    style="cursor:pointer;">
         <td>{{ i + 1 }}</td>
         <td class="shipment-id">{{ ship.shipment_number }}</td>
         <td>{{ ship.client_name || 'N/A' }}</td>
@@ -102,3 +137,10 @@
   (closeModal)="closeModal()"
   (shipmentUpdated)="onShipmentUpdated($event)">
 </app-shipment-modal>
+
+<a routerLink="/analytics" class="nav-link">📈 Analytics</a>
+<a routerLink="/activity-log" class="nav-link">📜 Activity</a>
+<a routerLink="/clients" class="nav-link">👥 Clients</a>
+<a routerLink="/invoices" class="nav-link">🧾 Invoices</a>
+
+<a routerLink="/admin-panel" class="nav-link" *ngIf="isAdmin">🛡️ Admin</a>

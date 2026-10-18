@@ -1,38 +1,42 @@
-import { Component, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, HostListener, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class Login {
-  // Login fields
   username = '';
   password = '';
-
-  // Signup fields
   showSignup = false;
   signupUsername = '';
   signupPassword = '';
   confirmPassword = '';
-
-  // UI toggles
   showLoginPassword = false;
   showSignupPassword = false;
   showConfirmPassword = false;
   isLoading = false;
-
-  // 3D Tilt
   cardTransform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
 
-  constructor(private authService: AuthService, private router: Router, private toastr: ToastrService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private toastr: ToastrService,
+    @Inject(PLATFORM_ID) private pid: Object
+  ) {}
+
+  get isAdmin(): boolean {
+    if (!isPlatformBrowser(this.pid)) return false;
+    const u = JSON.parse(localStorage.getItem('user') || '{}');
+    return u.role === 'admin';
+  }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
@@ -41,14 +45,13 @@ export class Login {
     const rect = card.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -5;
-    const rotateY = ((x - centerX) / centerX) * 5;
-    this.cardTransform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rx = ((y - cy) / cy) * -5;
+    const ry = ((x - cx) / cx) * 5;
+    this.cardTransform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
   }
 
-  // ---------- TOGGLE SIGNUP ----------
   toggleSignup(event: Event) {
     event.preventDefault();
     this.showSignup = !this.showSignup;
@@ -59,63 +62,56 @@ export class Login {
     }
   }
 
-  // ---------- LOGIN ----------
   onLogin() {
     if (!this.username || !this.password) {
-      alert('⚠️ Please fill in both fields.');
+      this.toastr.warning('Please fill in both fields.', 'Warning');
       return;
     }
     this.isLoading = true;
     this.authService.login(this.username, this.password).subscribe({
-      next: () => {
+      next: (res: any) => {
+        const token = res?.data?.access_token || res?.access_token;
+        if (token) {
+          localStorage.setItem('access_token', token);
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+        }
+        this.toastr.success('Login successful!', 'Welcome');
         this.router.navigate(['/dashboard']);
         this.isLoading = false;
       },
-      error: (err) => {
-        alert('❌ Login failed: ' + (err.error?.msg || 'Invalid credentials'));
+      error: (err: any) => {
+        this.toastr.error('Login failed: ' + (err.error?.msg || 'Invalid credentials'), 'Error');
         this.isLoading = false;
       }
     });
   }
 
-  // ---------- SIGNUP ----------
   onSignup() {
     if (!this.signupUsername || !this.signupPassword || !this.confirmPassword) {
-      alert('⚠️ Please fill in all signup fields.');
+      this.toastr.warning('Please fill in all fields.', 'Warning');
       return;
     }
     if (this.signupPassword !== this.confirmPassword) {
-      alert('⚠️ Passwords do not match!');
+      this.toastr.warning('Passwords do not match!', 'Warning');
       return;
     }
     if (this.signupPassword.length < 4) {
-      alert('⚠️ Password must be at least 4 characters.');
+      this.toastr.warning('Password must be at least 4 characters.', 'Warning');
       return;
     }
-
     this.isLoading = true;
     this.authService.signup(this.signupUsername, this.signupPassword).subscribe({
       next: () => {
-        alert('✅ Account created! Logging you in...');
+        this.toastr.success('Account created! Logging you in...', 'Success');
         this.username = this.signupUsername;
         this.password = this.signupPassword;
         this.showSignup = false;
-        this.onLogin(); // Auto-login
-        this.isLoading = false;
+        this.onLogin();
       },
-      error: (err) => {
-        alert('❌ Signup failed: ' + (err.error?.msg || 'Username might already exist.'));
+      error: (err: any) => {
+        this.toastr.error('Signup failed: ' + (err.error?.msg || 'Try again'), 'Error');
         this.isLoading = false;
       }
     });
   }
-    ngOnInit(): void {
-    // Clear any leftover values (prevents autofill)
-    this.username = '';
-    this.password = '';
-    this.signupUsername = '';
-    this.signupPassword = '';
-    this.confirmPassword = '';
-  }
-
 }
